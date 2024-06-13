@@ -1,7 +1,12 @@
 import express from "express";
 import goalRoutes from "./routes/GoalRoutes.js";
-import {errorHandler} from "./middleware/errorMiddleware.js"
+import { errorHandler } from "./middleware/errorMiddleware.js";
+import colors from "colors";
+import { connectDB } from "./config/db.js";
+
 const PORT = process.env.PORT || 5000;
+
+connectDB();
 
 const app = express();
 
