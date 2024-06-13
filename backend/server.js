@@ -1,16 +1,19 @@
 import express from "express";
 import goalRoutes from "./routes/GoalRoutes.js";
+import {errorHandler} from "./middleware/errorMiddleware.js"
 const PORT = process.env.PORT || 5000;
 
 const app = express();
 
+//Following two middlewares used to accept body data of the req
 //middleware to parse json requests
 app.use(express.json());
-
 //middleware to parse URL-encoded daata
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 
 app.use("/api/goals", goalRoutes);
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server Started on ${PORT}`);
