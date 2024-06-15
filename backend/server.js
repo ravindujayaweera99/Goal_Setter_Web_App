@@ -14,8 +14,8 @@ const app = express();
 //Following two middlewares used to accept body data of the req
 //middleware to parse json requests
 app.use(express.json());
-//middleware to parse URL-encoded daata
-app.use(express.urlencoded({ extended: false }));
+//middleware to parse URL-encoded data
+app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/goals", goalRoutes);
 app.use("/api/users", userRoutes);
