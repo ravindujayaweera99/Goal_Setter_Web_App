@@ -9,11 +9,6 @@ import bcrypt from "bcryptjs";
 export const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
-  console.log("Request Body:", req.body);
-  console.log("Name:", name);
-  console.log("Email:", email);
-  console.log("Password:", password);
-
   if (!name || !email || !password) {
     res.status(400);
     throw new Error("Please add all fields!");
@@ -42,6 +37,7 @@ export const registerUser = asyncHandler(async (req, res) => {
       _id: user.id,
       name: user.name,
       email: user.email,
+      token: generateToken(user._id),
     });
   } else {
     res.status(400);
@@ -53,16 +49,40 @@ export const registerUser = asyncHandler(async (req, res) => {
 // @route POST /api/users/login
 // @access public
 export const loginUser = asyncHandler(async (req, res) => {
-  res.status(200).json({
-    message: "Login User",
-  });
+  const { email, password } = req.body;
+
+  //check for the user email
+  const user = await User.findOne({ email });
+
+  if (user && (await bcrypt.compare(password, user.password))) {
+    res.status(201).json({
+      _id: user.id,
+      name: user.name,
+      email: user.email,
+      token: generateToken(user._id),
+    });
+  } else {
+    res.status(400);
+    throw new Error("Invalid Credentials!");
+  }
 });
 
 // @desc GET get user data
 // @route GET /api/users/me
 // @access private
 export const getMe = asyncHandler(async (req, res) => {
+  const { _id, name, email } = await User.findById(req.user._id);
+
   res.status(200).json({
-    message: "Your Details",
+    id: _id,
+    name,
+    email,
   });
 });
+
+// Generating JWT
+const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: "30d",
+  });
+};
